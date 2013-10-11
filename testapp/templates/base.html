@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{% block title %}cql-engine test project{% endblock %}</title>
+</head>
+
+<body>
+
+  <header>
+    <h1>{{ self.title() }}</h1>
+  </header>
+
+  <hr>
+
+  {% block content %}{% endblock %}
+
+</body>
+
+</html>
