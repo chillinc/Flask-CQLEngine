@@ -30,3 +30,7 @@ def init_db():
     for e in entities:
         print 'creating table for {0}'.format(e)
         sync_table(e)
+
+if __name__ == '__main__':
+    init_db()
+
