@@ -41,8 +41,10 @@ class CQLEngine(object):
 
         # Initialize connection and store it to extensions
         hosts = app.config['CQLENGINE_HOSTS']
+        default_keyspace = app.config['CQLENGINE_DEFAULT_KEYSPACE']
+
         # Configure cqlengine's global connection pool.
-        setup(hosts)
+        setup(hosts, default_keyspace=default_keyspace)
 
     def _include_public_methods(self, connection):
         """
