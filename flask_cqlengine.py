@@ -1,9 +1,5 @@
-import inspect
-import urlparse
-
 from cqlengine.connection import setup
 from cqlengine_session import get_session, save
-from werkzeug.utils import import_string
 
 __all__ = ('CQLEngine', )
 
