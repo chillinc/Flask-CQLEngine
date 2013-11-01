@@ -54,5 +54,3 @@ class BasicAppTestCase(unittest.TestCase):
         c.post('/add', data=dict(title='2nd Item', text='The text'))
         rv = c.get('/')
         self.assertTrue(rv.data == b'First Item\n2nd Item' or rv.data == b'2nd Item\nFirst Item')
-        self.assertEqual(rv.data, b'First Item\n2nd Item')
-    
