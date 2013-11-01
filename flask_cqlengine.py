@@ -58,14 +58,3 @@ class CQLEngine(object):
         def save_session(response):
             save()
             return response
-
-
-    def _include_public_methods(self, connection):
-        """
-        Include public methods from connection instance to current instance.
-        """
-        for attr in dir(connection):
-            value = getattr(connection, attr)
-            if attr.startswith('_') or not callable(value):
-                continue
-            self.__dict__[attr] = value
