@@ -4,12 +4,13 @@ import uuid
 from cqlengine import columns
 from cqlengine.management import create_keyspace, delete_keyspace, sync_table
 from cqlengine.models import Model
+from cqlengine_session import SessionModel
 import flask
 from flask.ext import cqlengine
 
 
 def make_todo_model():
-    class Todo(Model):
+    class Todo(SessionModel):
         uuid = columns.UUID(primary_key=True, default=uuid.uuid4)
         title = columns.Text(max_length=60)
         text = columns.Text()
@@ -36,8 +37,8 @@ class BasicAppTestCase(unittest.TestCase):
         @app.route('/add', methods=['POST'])
         def add():
             form = flask.request.form
-            todo = self.Todo.create(title=form['title'],
-                                    text=form['text'])
+            todo = self.Todo.session_create(title=form['title'],
+                                            text=form['text'])
             return 'added'
 
         create_keyspace(app.config['CQLENGINE_DEFAULT_KEYSPACE'])

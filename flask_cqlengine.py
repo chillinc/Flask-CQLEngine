@@ -2,6 +2,7 @@ import inspect
 import urlparse
 
 from cqlengine.connection import setup
+from cqlengine_session import get_session, save
 from werkzeug.utils import import_string
 
 __all__ = ('CQLEngine', )
@@ -45,6 +46,23 @@ class CQLEngine(object):
 
         # Configure cqlengine's global connection pool.
         setup(hosts, default_keyspace=default_keyspace)
+
+        # We want to close the connection pool when the application closes.
+        @app.teardown_appcontext
+        def close_connection_pool(exception):
+            from cqlengine.connection import connection_pool
+            print connection_pool
+            #connection_pool.clear()
+
+        @app.before_request
+        def clear_session():
+            get_session(clear=True)
+
+        @app.after_request
+        def save_session(response):
+            save()
+            return response
+
 
     def _include_public_methods(self, connection):
         """
