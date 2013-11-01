@@ -47,8 +47,8 @@ class CQLEngine(object):
         @app.teardown_appcontext
         def close_connection_pool(exception):
             from cqlengine.connection import connection_pool
-            print connection_pool
-            #connection_pool.clear()
+            if connection_pool:
+                connection_pool.clear()
 
         @app.before_request
         def clear_session():
