@@ -1,10 +1,22 @@
 from cqlengine.connection import setup
-from cqlengine_session import get_session, save
+from cqlengine_session import clear, save, SessionManager, set_session_manager
+from flask import _request_ctx_stack
+try:
+    from flask import _app_ctx_stack
+except ImportError:
+    _app_ctx_stack = None
+
 
 __all__ = ('CQLEngine', )
 
 
 __version__ = '0.1'
+
+
+# Which stack should we use?  _app_ctx_stack is new in 0.9
+context_stack = _app_ctx_stack or _request_ctx_stack
+# We use appcontext because one might want to access the CQLEngine objects
+# from a shell for example.
 
 
 class CQLEngine(object):
@@ -42,19 +54,23 @@ class CQLEngine(object):
 
         # Configure cqlengine's global connection pool.
         setup(hosts, default_keyspace=default_keyspace)
-
-        # We want to close the connection pool when the application closes.
-        @app.teardown_appcontext
-        def close_connection_pool(exception):
-            from cqlengine.connection import connection_pool
-            if connection_pool:
-                connection_pool.clear()
+        set_session_manager(AppContextSessionManager())
 
         @app.before_request
         def clear_session():
-            get_session(clear=True)
+            clear()
 
         @app.after_request
         def save_session(response):
             save()
             return response
+
+
+class AppContextSessionManager(SessionManager):
+    def get_session(self):
+        """Return current session for this context."""
+        return getattr(context_stack.top, 'cqlengine_session', None)
+
+    def set_session(self, session):
+        """Make the given session the current session for this context."""
+        context_stack.top.cqlengine_session = session
