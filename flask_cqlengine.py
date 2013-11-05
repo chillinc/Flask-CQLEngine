@@ -56,14 +56,14 @@ class CQLEngine(object):
         setup(hosts, default_keyspace=default_keyspace)
         set_session_manager(AppContextSessionManager())
 
-        @app.before_request
-        def clear_session():
-            clear()
-
-        @app.after_request
         def save_session(response):
             save()
             return response
+
+        if hasattr(app, 'teardown_appcontext'):
+            app.teardown_appcontext(save_session)
+        else:
+            app.teardown_request(save_session)
 
 
 class AppContextSessionManager(SessionManager):
