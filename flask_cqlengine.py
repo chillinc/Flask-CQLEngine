@@ -52,6 +52,14 @@ class CQLEngine(object):
         hosts = app.config['CQLENGINE_HOSTS']
         default_keyspace = app.config['CQLENGINE_DEFAULT_KEYSPACE']
 
+        #hosts needs to be a list when passed to CQLEngine
+        # but we want to support a comma separated string
+        if isinstance(hosts, basestring):
+            hosts = hosts.split(',')
+
+        # additionally, CQLEngine wants bytes, not unicode
+        hosts = map(bytes, hosts)
+
         # Configure cqlengine's global connection pool.
         setup(hosts, default_keyspace=default_keyspace)
         set_session_manager(AppContextSessionManager())
