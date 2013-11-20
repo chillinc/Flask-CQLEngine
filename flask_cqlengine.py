@@ -64,10 +64,12 @@ class CQLEngine(object):
         setup(hosts, default_keyspace=default_keyspace)
         set_session_manager(AppContextSessionManager())
 
-        @app.after_request
-        def save_session(response):
-            save()
-            return response
+        @app.teardown_request
+        def save_session(response_or_exc):
+            if response_or_exc is None:
+                save()
+            clear()
+            return response_or_exc
 
 
 class AppContextSessionManager(SessionManager):
