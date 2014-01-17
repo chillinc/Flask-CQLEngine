@@ -37,12 +37,11 @@ class BasicAppTestCase(unittest.TestCase):
         @app.route('/add', methods=['POST'])
         def add():
             form = flask.request.form
-            todo = self.Todo.session_create(title=form['title'],
-                                            text=form['text'])
+            todo = self.Todo.create(title=form['title'], text=form['text'])
             return 'added'
 
         create_keyspace(app.config['CQLENGINE_DEFAULT_KEYSPACE'])
-        sync_table(self.Todo)
+        self.Todo.sync_table()
 
         self.app = app
 
