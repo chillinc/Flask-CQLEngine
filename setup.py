@@ -3,7 +3,7 @@
 import os
 import re
 
-from distutils.core import setup
+from setuptools import setup
 
 
 DIRNAME = os.path.abspath(os.path.dirname(__file__))
@@ -22,9 +22,13 @@ setup(
     author='Michael Cyrulnik',
     author_email='michael@chill.com',
     url='https://github.com/chilldotcome/Flask-CQLEngine',
+    dependency_links=[
+        'git+git://github.com/chilldotcom/CQLEngine-Session#egg=CQLEngine-Session-0.1'
+    ],
     install_requires=[
+        'CQLEngine-Session>=0.1',
         'Flask',
-        'cqlengine',
+        'cqlengine'
     ],
     py_modules=[
         'flask_cqlengine',
