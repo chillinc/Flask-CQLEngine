@@ -50,6 +50,7 @@ class CQLEngine(object):
 
         # Initialize connection and store it to extensions
         hosts = app.config['CQLENGINE_HOSTS']
+        port = int(app.config['CQLENGINE_PORT'])
         default_keyspace = app.config['CQLENGINE_DEFAULT_KEYSPACE']
 
         #hosts needs to be a list when passed to CQLEngine
@@ -61,7 +62,7 @@ class CQLEngine(object):
         hosts = map(bytes, hosts)
 
         # Configure cqlengine's global connection pool.
-        setup(hosts, default_keyspace=default_keyspace)
+        setup(hosts, default_keyspace=default_keyspace, port=port)
         set_session_manager(AppContextSessionManager())
 
         @app.teardown_request
