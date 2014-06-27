@@ -25,7 +25,7 @@ class BasicAppTestCase(unittest.TestCase):
     def setUp(self):
         app = flask.Flask(__name__)
         app.config['TESTING'] = True
-        app.config['CQLENGINE_HOSTS'] = 'localhost:9160'
+        app.config['CQLENGINE_HOSTS'] = 'localhost'
         app.config['CQLENGINE_DEFAULT_KEYSPACE'] = 'testkeyspace{}'.format(str(uuid.uuid1()).replace('-', ''))
         cqlengine.CQLEngine(app)
         self.Todo = make_todo_model()
