@@ -53,6 +53,7 @@ class CQLEngine(object):
         port = int(app.config['CQLENGINE_PORT'])
         default_keyspace = app.config['CQLENGINE_DEFAULT_KEYSPACE']
         delayed_connect = app.config.get('CQLENGINE_DELAYED_CONNECT', False)
+        setup_kwargs = app.config.get('CQLENGINE_SETUP_KWARGS', {})
 
         #hosts needs to be a list when passed to CQLEngine
         # but we want to support a comma separated string
@@ -66,7 +67,8 @@ class CQLEngine(object):
         setup(hosts,
               default_keyspace=default_keyspace,
               delayed_connect=delayed_connect,
-              port=port)
+              port=port,
+              **setup_kwargs)
         set_session_manager(AppContextSessionManager())
 
         @app.teardown_request
