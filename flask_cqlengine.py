@@ -52,7 +52,8 @@ class CQLEngine(object):
         hosts = app.config['CQLENGINE_HOSTS']
         port = int(app.config['CQLENGINE_PORT'])
         default_keyspace = app.config['CQLENGINE_DEFAULT_KEYSPACE']
-        delayed_connect = app.config.get('CQLENGINE_DELAYED_CONNECT', False)
+        lazy_connect = app.config.get('CQLENGINE_LAZY_CONNECT', False)
+        retry_connect = app.config.get('CQLENGINE_RETRY_CONNECT', False)
         setup_kwargs = app.config.get('CQLENGINE_SETUP_KWARGS', {})
 
         #hosts needs to be a list when passed to CQLEngine
@@ -66,8 +67,9 @@ class CQLEngine(object):
         # Configure cqlengine's global connection pool.
         setup(hosts,
               default_keyspace=default_keyspace,
-              delayed_connect=delayed_connect,
               port=port,
+              lazy_connect=lazy_connect,
+              retry_connect=retry_connect,
               **setup_kwargs)
         set_session_manager(AppContextSessionManager())
 
