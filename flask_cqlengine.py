@@ -72,7 +72,13 @@ class CQLEngine(object):
         @app.teardown_request
         def save_session(response_or_exc):
             if response_or_exc is None:
-                save()
+                try:
+                    save()
+                finally:
+                    # successful save or not,
+                    # we want to clear the session
+                    clear()
+
             clear()
             return response_or_exc
 
