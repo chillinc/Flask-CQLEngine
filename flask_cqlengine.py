@@ -1,7 +1,7 @@
 from cqlengine.connection import setup
 from cqlengine_session import clear, save, SessionManager, set_session_manager
 from flask import _request_ctx_stack
-from flask.signal import got_request_exception
+
 try:
     from flask import _app_ctx_stack
 except ImportError:
