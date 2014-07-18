@@ -69,16 +69,19 @@ class CQLEngine(object):
               **setup_kwargs)
         set_session_manager(AppContextSessionManager())
 
-        @app.teardown_request
-        def save_session(response_or_exc):
-            if response_or_exc is None:
-                try:
-                    save()
-                finally:
-                    # successful save or not,
-                    # we want to clear the session
-                    clear()
+        @app.after_request
+        def save_session(response):
+            """Saves the session when the request is complete.
 
+            Because after_request are processed in reverse order of registration,
+            the user should be conscious of when Flask-CQLEngine was inited.
+            """
+            save()
+            return response
+
+        @app.teardown_appcontext
+        def clear_session(response_or_exc):
+            """When the context is popped, always clear the session"""
             clear()
             return response_or_exc
 
