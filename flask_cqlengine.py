@@ -1,6 +1,7 @@
 from cqlengine.connection import setup
 from cqlengine_session import clear, save, SessionManager, set_session_manager
 from flask import _request_ctx_stack
+from flask.signal import got_request_exception
 try:
     from flask import _app_ctx_stack
 except ImportError:
@@ -69,21 +70,32 @@ class CQLEngine(object):
               **setup_kwargs)
         set_session_manager(AppContextSessionManager())
 
-        @app.after_request
-        def save_session(response):
-            """Saves the session when the request is complete.
-
-            Because after_request are processed in reverse order of registration,
-            the user should be conscious of when Flask-CQLEngine was inited.
-            """
-            save()
-            return response
+        self.wrap_full_dispatch_request(app)
 
         @app.teardown_appcontext
         def clear_session(response_or_exc):
-            """When the context is popped, always clear the session"""
+            """always clear when request is done"""
             clear()
             return response_or_exc
+
+    def wrap_full_dispatch_request(self, app):
+        """
+        Wrap full_dispatch_request so that saves can be triggered
+        after the response has been fully processed.
+
+        wrapping full_dispatch_request allows exceptions generated during
+        save to be handled by the normal exception handling in Flask.
+        """
+        old_full_dispatch_request = app.full_dispatch_request
+
+        def new_full_dispatch_request():
+            #if dispatch raises an exception, save will get skipped.
+            #if the exception is handled, it's up to the handler to deal with save/clear
+            response = old_full_dispatch_request()
+            save()
+            return response
+
+        app.full_dispatch_request = new_full_dispatch_request
 
 
 class AppContextSessionManager(SessionManager):
