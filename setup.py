@@ -28,7 +28,7 @@ setup(
     install_requires=[
         'CQLEngine-Session>=0.1',
         'Flask',
-        'cqlengine'
+        'cqlengine>=0.18'
     ],
     py_modules=[
         'flask_cqlengine',
